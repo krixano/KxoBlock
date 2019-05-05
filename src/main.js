@@ -367,16 +367,9 @@ class ZeroApp extends ZeroFrame {
 window.page = new ZeroApp();
 
 var Home = require("./router_pages/home.vue");
-
-//var Search = require("./router_pages/search.vue");
-
-//var DeviceSettings = require("./router_pages/device_settings.vue");
-//var SupportMe = require("./router_pages/support_me.vue");
+var SupportMe = require("./router_pages/support_me.vue");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(window.Router, app, [
-	/*{ route: "search/:searchquery", component: Search },
-	{ route: "search", component: Search },
 	{ route: "support-me", component: SupportMe },
-	{ route: "device-settings", component: DeviceSettings },*/
 	{ route: "", component: Home }
 ]);
