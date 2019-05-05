@@ -23,38 +23,6 @@
 			</div>
 		</v-spacer>
 		<v-spacer class="hidden-lg-and-up"></v-spacer>
-		<!--<v-toolbar-items style="margin-left: 10px;">-->
-			<!--<v-btn flat>News</v-btn>-->
-			<!--<v-btn flat @click="goto('plugins')">Plugin Store</v-btn>-->
-		<!--</v-toolbar-items>-->
-		<!--<v-menu left offset-y dark>
-			<v-btn icon slot="activator" class="hidden-xs-only">
-		      <v-icon>apps</v-icon>
-		    </v-btn>
-		    <v-list>
-		    	<v-subheader>Network Zites</v-subheader>
-				<v-list-tile href="/1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" @click="gotoLink('/1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P')">
-		    		<v-list-tile-title>KxoNetwork</v-list-tile-title>
-		    	</v-list-tile>
-		    	<v-list-tile href="/kxovid.bit" @click="gotoLink('/kxovid.bit')">
-		    		<v-list-tile-title>KxoVid</v-list-tile-title>
-		    	</v-list-tile>
-		    	<v-list-tile href="/ZeroMedium.bit" @click="gotoLink('/ZeroMedium.bit')">
-		    		<v-list-tile-title>ZeroMedium</v-list-tile-title>
-		    	</v-list-tile>
-		    	<v-list-tile href="/ZeroExchange.bit" @click="gotoLink('/ZeroExchange.bit')">
-		    		<v-list-tile-title>KxoQA</v-list-tile-title>
-		    	</v-list-tile>
-		    	<v-list-tile href="/1LqcxtENM69yBggxPYLaj87J4bqon5SVwU" @click="gotoLink('/1LqcxtENM69yBggxPYLaj87J4bqon5SVwU')">
-		    		<v-list-tile-title>KxoHub (ZeroMe Hub)</v-list-tile-title>
-		    	</v-list-tile>
-		    	<v-divider></v-divider>
-		    	<v-subheader>Partner Zites</v-subheader>
-		    	<v-list-tile href="/1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg" @click="gotoLink('/1Ag6xidDHiPgWoDKhfSx4xFQr6WC3NqxZg')">
-		    		<v-list-tile-title>0Play Game Center</v-list-tile-title>
-		    	</v-list-tile>
-		    </v-list>
-		</v-menu>-->
 		<v-toolbar-items>
 			<v-btn flat v-if="!isLoggedIn" @click="login()">Sign In</v-btn>
 			<v-menu flat v-else offset-y>
@@ -78,7 +46,7 @@
 		name: "navbar",
 		data: () => {
 			return {
-				ZiteName: "KxoDo",
+				ZiteName: "Zite Template",
 				search: "",
 				kxozites: [
 					{ title: "KxoNetwork", address: "1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" },

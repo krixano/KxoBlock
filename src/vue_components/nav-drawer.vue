@@ -24,23 +24,9 @@
             </v-list-tile>
 
             <div v-if="isLoggedIn">
-                <v-divider style="margin-top: 12px;"></v-divider>
-                <v-subheader>Starred Projects</v-subheader>
-
-                <v-divider style="margin-top: 12px;"></v-divider>
-                <v-subheader>Your Projects</v-subheader>
-                <v-list-tile :href="'./?/'" @click.prevent="goto('')">
-                    <v-list-tile-content>
-                        <v-list-tile-title>Create Project</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
                 <!-- TODO -->
             </div>
 
-            <v-divider style="margin-top: 12px; margin-bottom: 12px;"></v-divider>
-            <v-list-tile :class="{ 'menu-item-active': routerIsActive('device-settings') }" href="./?/device-settings" @click.prevent="goto('device-settings')">
-                <v-list-tile-title>Device Settings</v-list-tile-title>
-            </v-list-tile>
             <v-list-tile :class="{ 'menu-item-active': routerIsActive('support-me') }" href="./?/support-me" @click.prevent="goto('support-me')">
                 <v-list-tile-title>Support Me</v-list-tile-title>
             </v-list-tile>
