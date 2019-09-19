@@ -46,7 +46,7 @@
 		name: "navbar",
 		data: () => {
 			return {
-				ZiteName: "Zite Template",
+				ZiteName: "",
 				search: "",
 				kxozites: [
 					{ title: "KxoNetwork", address: "1GTVetvjTEriCMzKzWSP9FahYoMPy6BG1P" },
@@ -59,9 +59,9 @@
 		beforeMount: function() {
 			var self = this;
 			this.$parent.$on("setLanguage", function(langTranslation) {
-				self.ZiteName = langTranslation["KxoDo"];
+				self.ZiteName = langTranslation["zite-title"];
 			});
-			this.ZiteName = this.langTranslation["KxoDo"];
+			this.ZiteName = this.langTranslation["zite-title"];
 
 			if (Router.currentParams["searchquery"]) {
 				this.search = Router.currentParams["searchquery"];

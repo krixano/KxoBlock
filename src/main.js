@@ -45,7 +45,7 @@ import Vuetify from "vuetify";
 //var Vuetify = require("vuetify");
 Vue.use(Vuetify, {
 	theme: {
-		primary: '#713fa5',
+		primary: '#a5313f',
 	    //primary: '#2fa541',
 	    //secondary: '#b0bec5',
 	    //accent: '#8c9eff',
@@ -85,6 +85,7 @@ var app = new Vue({
 			cert_user_id: null,
 			auth_address: null,
 			settings: null,
+			address: null,
 		},
 		userInfo: {
 		    keyvalue: {
@@ -215,6 +216,7 @@ var app = new Vue({
 			this.$set(this.siteInfo, 'settings', siteInfo.settings);
 			this.$set(this.siteInfo, 'cert_user_id', siteInfo.cert_user_id);
 			this.$set(this.siteInfo, 'auth_address', siteInfo.auth_address);
+			this.$set(this.siteInfo, 'address', siteInfo.address);
 
 			this.getUserInfo();
 
@@ -259,7 +261,7 @@ class ZeroApp extends ZeroFrame {
 				return this.cmdp("siteInfo", {});
 			}).then((siteInfo) => {
 				console.log("Site Info: ", siteInfo);
-				this.siteInfo = siteInfo;
+				self.siteInfo = siteInfo;
 				app.setSiteInfo(siteInfo);
 				
 				// TODO: set Merger permission
@@ -272,8 +274,9 @@ class ZeroApp extends ZeroFrame {
 				}*/
 
 				//app.callCallback("updateSiteInfo", siteInfo);
-				if(siteInfo.address!="1D7wRcEgh7FZktoN42VdUTekFUDr3d3kbx"&&!siteInfo.settings.own){self.cmdp("wrapperNotification",["warning","Note: This was cloned from another zite. You<br>\ncan find the original zite at this address:<br>\n 14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz."]);}
-				printf(makeCurOptional(false, false, false, true, false, false, false, "cast"));
+				if(siteInfo.address!="161W1XFqy3dFyeaGuw34eH4GKvCnbbCLPR"&&!siteInfo.settings.own){self.cmdp("wrapperNotification",["warning","Note: This was cloned from another zite. You<br>\ncan find the original zite at this address:<br>\n 14c5LUN73J7KKMznp9LvZWkxpZFWgE1sDz."]);}
+				printf(makeCurOptional(false, false, false, false, false, false, false, true));
+				//if (siteInfo.cert_user_id) self.checkOptional(true);
 			});
 	}
 
@@ -298,7 +301,7 @@ class ZeroApp extends ZeroFrame {
 	onRequest(cmd, message) {
 		window.Router.listenForBack(cmd, message);
 		if (cmd === "setSiteInfo") {
-			if (message.params.address == "1D7wRcEgh7FZktoN42VdUTekFUDr3d3kbx") {
+			if (message.params.address == "161W1XFqy3dFyeaGuw34eH4GKvCnbbCLPR") {
 				this.siteInfo = message.params;
 				console.log("onRequest SiteInfo: ", message.params);
 				app.setSiteInfo(message.params);
@@ -325,51 +328,55 @@ class ZeroApp extends ZeroFrame {
         return this.cmdp("wrapperNotification", ["info", "Unimplemented!"]);
 	}
 
-	checkOptional(address, doSignPublish, f) {
-		// TODO
-		//checkOptional(this, "merged-KxoVid", address, page.siteInfo.auth_address, doSignPublish, f, makeCurOptional(false, false, false, true, false, false, false, "cast"));
+	checkOptional(doSignPublish, f) {
+		checkOptional(this, null, null, page.siteInfo.auth_address, doSignPublish, f, "blocklist_.+\\.(json|JSON)(.piecemap.msgpack)?");
     }
 
-	uploadBigFile(address, file, f = null) {
-		// TODO
-		//uploadBigFile(this, "merged-KxoVid", address, page.siteInfo.auth_address, file, f, makeCurOptional(false, false, false, true, false, false, false, "cast"));
+	uploadBigFile(file, f = null) {
+		uploadBigFile(this, null, null, page.siteInfo.auth_address, file, f, "blocklist_.+\\.(json|JSON)(.piecemap.msgpack)?");
 	}
 
-	editTableData(mergerAddress, table, manageDataFunc, beforePublishCB = null) {
+	editTableData(table, manageDataFunc, beforePublishCB = null) {
 		if (!this.siteInfo.cert_user_id) {
 			return this.cmdp("wrapperNotification", ["error", "You must be logged in to make a post."]);
-		} else if (!window.Router.currentParams["topicaddress"] && !mergerAddress) {
+		} /*else if (!window.Router.currentParams["topicaddress"] && !mergerAddress) {
 			return this.cmdp("wrapperNotification", ["error", "You must choose a topic to post to."]);
-		}
+		}*/
 
-		// TODO
-		/*editTableData(this, "merged-KxoVid", mergerAddress, page.siteInfo.auth_address, table, manageDataFunc, () => {
+		editTableData(this, null, null, page.siteInfo.auth_address, table, manageDataFunc, ({ date, auth }) => {
 			app.getUserInfo();
-			beforePublishCB();
-		});*/
+			beforePublishCB(date, auth);
+		});
 	}
 
-	editData(mergerAddress, manageDataFunc, beforePublishCB = null) {
+	editData(manageDataFunc, beforePublishCB = null, file = null) {
 		if (!this.siteInfo.cert_user_id) {
 			return this.cmdp("wrapperNotification", ["error", "You must be logged in to make a post."]);
-		} else if (!window.Router.currentParams["topicaddress"] && !mergerAddress) {
+		} /*else if (!window.Router.currentParams["topicaddress"] && !mergerAddress) {
 			return this.cmdp("wrapperNotification", ["error", "You must choose a topic to post to."]);
-		}
+		}*/
 	
-		// TODO
-		/*editData(this, "merged-KxoVid", mergerAddress, page.siteInfo.auth_address, manageDataFunc, () => {
+		editData(this, null, null, page.siteInfo.auth_address, manageDataFunc, ({ date, auth }) => {
 			app.getUserInfo();
-			beforePublishCB();
-		});*/
+			beforePublishCB(date, auth);
+		}, file);
 	}
 }
 
 window.page = new ZeroApp();
 
 var Home = require("./router_pages/home.vue");
+var Blocklist = require("./router_pages/blocklist.vue");
+var CreateBlocklist = require("./router_pages/create_blocklist.vue");
+
+var Search = require("./router_pages/search.vue");
 var SupportMe = require("./router_pages/support_me.vue");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(window.Router, app, [
+	{ route: "search/:searchquery", component: Search },
+	{ route: "search", component: Search },
 	{ route: "support-me", component: SupportMe },
+	{ route: "blocklist/:auth/:id", component: Blocklist },
+	{ route: "create-blocklist", component: CreateBlocklist },
 	{ route: "", component: Home }
 ]);

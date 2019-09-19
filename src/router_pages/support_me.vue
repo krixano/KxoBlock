@@ -3,12 +3,12 @@
         <v-container style="max-width: 700px">
             <div class="title" style="margin-bottom: 8px; text-align: center;">Supporting Me</div>
             <p class="body-1">
-                You can help support me (Krixano) by becomming a <a href="https://www.patreon.com/krixano">patreon supporter</a>, donating Bitcoin (to 12gAes6NzDS9E2q6Q1UXrpUdbPS6nvuBPu) or <a href="#">Namecoin</a>, and subscribing to the <a href="./?/channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538205673322" @click.prevent="goto('channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538205673322')">official KxoVid channel</a> as well as my <a href="./?/channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538185680443" @click.prevent="goto('channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538185680443')">personal channel</a>.
+                You can help support me (Krixano) by becoming a <a href="https://www.patreon.com/krixano">patreon supporter</a>, donating Bitcoin (to 12gAes6NzDS9E2q6Q1UXrpUdbPS6nvuBPu) or <a href="#">Namecoin</a>, and subscribing to the <a href="/kxovid.bit/?/channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538205673322" @click.prevent="gotoLink('/kxovid.bit/channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538205673322')">official KxoVid channel</a> as well as my <a href="/kxovid.bit/?/channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538185680443" @click.prevent="gotoLink('/kxovid.bit/channel/1Jqrw1mySvE2sd3uaxTMdCBaYtVMJohcC2/1538185680443')">personal channel</a>.
             </p>
 			<div class="title" style="margin-top: 10px; margin-bottom: 8px; text-align: center;">Contributors</div>
-			<p>Thanks to Ivanq/GitCenter, ZeroLSTN, Thunder, Glightstar, and DaniellMesquita for ideas, bug reports, testing, and helping out with the programming.</p>
+			<p>Thanks to Ivanq/GitCenter, ZeroLSTN, and Glightstar for ideas, bug reports, testing, and helping out with the programming.</p>
 			<br>
-			<p><strong>Version:</strong> 0.5</p>
+			<p><strong>Version:</strong> {{ version }}</p>
         </v-container>
 	</v-container>
 </template>
@@ -22,19 +22,16 @@
 		name: "support-me",
 		data: () => {
 			return {
+				version: ""
 			};
 		},
 		beforeMount: function() {
+			this.version = window.version
 			var self = this;
 			/*this.$parent.$on("setLanguage", function(langTranslation) {
 				self.ZiteName = langTranslation["KxoId"];
 			});
 			this.ZiteName = this.langTranslation["KxoId"];*/
-
-			page.cmdp("dbQuery", ["SELECT * FROM channels LEFT JOIN json USING (json_id)"])
-				.then((results) => {
-					self.channels = results;
-				});
 		},
 		mounted: function() {
 			var self = this;

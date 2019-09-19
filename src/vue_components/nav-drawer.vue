@@ -23,10 +23,29 @@
                 </v-list-tile-content>
             </v-list-tile>
 
+            <div v-if="enabled_blocklists.length > 0">
+                <v-divider style="margin-top: 8px;"></v-divider>
+                <v-subheader>{{ langTranslation["navdrawer-enabled-blocklists"] }}</v-subheader>
+            </div>
+
             <div v-if="isLoggedIn">
+                <v-divider style="margin-top: 8px;"></v-divider>
+                <v-subheader>{{ langTranslation["navdrawer-your-blocklists"] }}</v-subheader>
+                <v-list-tile v-for="blocklist in your_blocklists" :key="blocklist.blocklist_id" :class="{ 'menu-item-active': blocklistIsActive(userInfo.auth_address, blocklist.blocklist_id) }" :href="'./?/blocklist/' + userInfo.auth_address + '/' + blocklist.blocklist_id" @click.prevent="goto('blocklist/' + userInfo.auth_address + '/' + blocklist.blocklist_id)">
+                    <v-list-tile-content>
+                        <v-list-tile-title>{{ blocklist.title }}</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+
+                <v-list-tile :class="{ 'menu-item-active': routerIsActive('create-blocklist') }" href="./?/create-blocklist" @click.prevent="goto('create-blocklist')">
+                    <v-list-tile-content>
+                        <v-list-tile-title>{{ langTranslation["navdrawer-create-blocklist"] }}</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
                 <!-- TODO -->
             </div>
 
+            <v-divider style="margin-top: 8px; margin-bottom: 8px;"></v-divider>
             <v-list-tile :class="{ 'menu-item-active': routerIsActive('support-me') }" href="./?/support-me" @click.prevent="goto('support-me')">
                 <v-list-tile-title>Support Me</v-list-tile-title>
             </v-list-tile>
@@ -39,7 +58,7 @@
         background-color: lightgray;
     }
     .theme--dark .menu-item-active {
-        background-color: #505050;
+        background-color: #605050;
     }
 </style>
 
@@ -52,14 +71,16 @@
 		name: "nav-drawer",
 		data: () => {
 			return {
-                subscriptions: [],
-                category_subscriptions: []
+                enabled_blocklists: [],
+                your_blocklists: [],
 			};
 		},
 		beforeMount: function() {
 			var self = this;
             
+            //this.getBlocklists();
             this.$emit("setcallback", "navDrawerUpdate", function(userInfo) {
+                self.getBlocklists();
 			});
 		},
 		updated: function() {
@@ -79,11 +100,21 @@
             }
 		},
 		methods: {
+            getBlocklists: function() {
+                var self = this;
+                var query = `SELECT * FROM blocklists LEFT JOIN json USING (json_id) WHERE directory="users/${this.userInfo.auth_address}" ORDER BY date_added ASC`;
+                console.log(query);
+                window.page.cmdp("dbQuery", [query])
+                    .then((results) => {
+                        console.log(results);
+                        self.your_blocklists = results;
+                    })
+            },
 			goto: function(to) {
                 Router.navigate(to);
 			},
 			login: function() {
-				page.selectUser();
+				window.page.selectUser();
 				return false;
 			},
 			gotoLink: function(to) {
@@ -92,6 +123,9 @@
             routerIsActive: function(route) {
                 return Router.currentRoute == route;
             },
+            blocklistIsActive: function(auth, id) {
+                return Router.currentRoute == "blocklist/:auth/:id" && Router.currentParams["auth"] == auth && Router.currentParams["id"] == id;
+            }
 		}
 	}
 </script>

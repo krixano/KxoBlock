@@ -81,14 +81,14 @@ var editTableData = (zeroframe, mergerType, mergerAddress, auth_address, table, 
 		});
 }
 
-var editData = (zeroframe, mergerType, mergerAddress, auth_address, manageDataFunc, beforePublishCB = null) => {
+var editData = (zeroframe, mergerType, mergerAddress, auth_address, manageDataFunc, beforePublishCB = null, file = null) => {
 	/*if (!zeroframe.siteInfo.cert_user_id) {
 		return zeroframe.cmdp("wrapperNotification", ["error", "You must be logged in to make a post."]);
 	} else if (!Router.currentParams["topicaddress"] && !mergerAddress) {
 		return zeroframe.cmdp("wrapperNotification", ["error", "You must choose a topic to post to."]);
 	}*/
 
-	var data_inner_path = (mergerType ? mergerType + '/' + mergerAddress + '/' : '') + "data/users/" + auth_address + "/data.json";
+	var data_inner_path = (mergerType ? mergerType + '/' + mergerAddress + '/' : '') + "data/users/" + auth_address + "/" + (file || "data") + ".json";
 	var content_inner_path = (mergerType ? mergerType + '/' + mergerAddress + '/' : '') + "data/users/" + auth_address + "/content.json";
 	//var data_inner_path = "merged-KxoVid/" + mergerAddress + "/data/users/" + zeroframe.siteInfo.auth_address + "/data.json";
 	//var content_inner_path = "merged-KxoVid/" + mergerAddress + "/data/users/" + zeroframe.siteInfo.auth_address + "/content.json";
@@ -144,10 +144,11 @@ var editData = (zeroframe, mergerType, mergerAddress, auth_address, manageDataFu
 		});
 }
 
-var makeCurOptional = (anything = false, audio = true, flac = true, video = true, zip = false, tar = false, doc = false, ...rest) => {
-	if (anything) return ".+\\.[a-zA-Z0-9]+(.piecemap.msgpack)?";
+var makeCurOptional = (anything = false, audio = true, flac = true, video = true, zip = false, tar = false, doc = false, json = false, ...rest) => {
+	if (anything) return "(?!data).+\\.[a-zA-Z0-9_]+(.piecemap.msgpack)?";
 
 	var result = ".+\\.(";
+	if (json) result = "(?!data).+\\.("; // Make sure 'data.json' isn't matched
 
 	if (audio) result += "mp3|ogg|webm|wav|wave|MP3|OGG|WEBM|WAV|WAVE";
 	if (video) {
@@ -168,6 +169,10 @@ var makeCurOptional = (anything = false, audio = true, flac = true, video = true
 	if (doc) {
 		if (!result.endsWith('|') && !result.endsWith('(')) result += "|";
 		result += "doc|docx|pdf|csv|xls|xlsx|odt|ppt|pptx|txt|md";
+	}
+	if (json) {
+		if (!result.endsWith('|') && !result.endsWith('(')) result += "|";
+		result += "json|JSON";
 	}
 
 	for (var i = 0; i < rest.length; i++) {
