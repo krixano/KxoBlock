@@ -19,8 +19,8 @@
 		        ["file_name", "TEXT"],
 		        ["cert_user_id", "TEXT"]
 		    ],
-		    "indexes": ["CREATE UNIQUE INDEX path ON json(directory, site, file_name)"],
-		    "schema_changed": 5
+		    "indexes": ["CREATE UNIQUE INDEX path ON json(directory, file_name)"],
+		    "schema_changed": 6
         },
         "blocklists": {
             "cols": [

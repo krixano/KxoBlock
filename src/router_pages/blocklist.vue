@@ -100,10 +100,14 @@
                     <v-card-text>
                         {{ zite.address }}
                     </v-card-text>
-                    <v-divider></v-divider>
-                    <v-card-text>
-                        <strong style="display: block;">Add To One of Your Blocklists</strong>
-                    </v-card-text>
+                    <div v-if="your_blocklists_type_zites.length > 0">
+                        <v-divider></v-divider>
+                        <v-card-text>
+                            <strong style="display: block;">Add To Your Blocklist</strong>
+                            <v-select v-model="add_zite_to_blocklist_select" :items="your_blocklists_type_zites" label="Blocklist" single-line></v-select>
+                            <v-btn small flat @click="addZiteToBlocklist(zite)">Add</v-btn>
+                        </v-card-text>
+                    </div>
                     <v-divider></v-divider>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -121,10 +125,14 @@
                     <v-card-text>
                         {{ user.auth_address }}
                     </v-card-text>
-                    <v-divider></v-divider>
-                    <v-card-text>
-                        <strong style="display: block;">Add To One of Your Blocklists</strong>
-                    </v-card-text>
+                    <div v-if="your_blocklists_type_users.length > 0">
+                        <v-divider></v-divider>
+                        <v-card-text>
+                            <strong style="display: block;">Add To Your Blocklist</strong>
+                            <v-select v-model="add_user_to_blocklist_select" :items="your_blocklists_type_users" label="Blocklist" single-line></v-select>
+                            <v-btn small flat @click="addUserToBlocklist(user)">Add</v-btn>
+                        </v-card-text>
+                    </div>
                     <v-divider></v-divider>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -166,6 +174,9 @@
                 userAddLoading: false,
                 mx: 0,
                 my: 0,
+                your_blocklists_type_users: [],
+                your_blocklists_type_zites: [],
+                add_to_blocklist_select: null,
 			};
 		},
 		beforeMount: function() {
@@ -175,8 +186,13 @@
             this.id = Router.currentParams["id"];
 
             this.getBlocklist();
+            this.getYourBlocklists();
 			this.$emit("setcallback", "update", function(userInfo) {
+                this.auth = Router.currentParams["auth"];
+                this.id = Router.currentParams["id"];
+                
                 self.getBlocklist();
+                self.getYourBlocklists();
 			});
 		},
 		computed: {
@@ -186,6 +202,37 @@
 			}
 		},
 		methods: {
+            getYourBlocklists: function() {
+                this.your_blocklists_type_users = [];
+                this.your_blocklists_type_zites = [];
+
+                var self = this;
+                var query = `SELECT * FROM blocklists LEFT JOIN json USING (json_id) WHERE directory="users/${this.userInfo.auth_address}" AND blocklist_id!=${self.id} ORDER BY date_added ASC`;
+                console.log(query);
+                window.page.cmdp("dbQuery", [query])
+                    .then((results) => {
+                        //console.log(results);
+                        for (var blocklist of results) {
+                            if (blocklist.type == "users" || blocklist.type == "both") {
+                                self.your_blocklists_type_users.push({
+                                    text: blocklist.title,
+                                    value: blocklist.id,
+                                    id: blocklist.id,
+                                    file: blocklist.file,
+                                });
+                            }
+
+                            if (blocklist.type == "zites" || blocklist.type == "both") {
+                                self.your_blocklists_type_zites.push({
+                                    text: blocklist.title,
+                                    value: blocklist.id,
+                                    id: blocklist.id,
+                                    file: blocklist.file,
+                                });
+                            }
+                        }
+                    });
+            },
             detectEnabled: function(blocklist) {
                 console.log(`data/${blocklist.directory}/${blocklist.file}`);
                 console.log(this.siteInfo.address);
@@ -308,8 +355,8 @@
                 }
             },
             addUser: function() {
-                var self = this;
                 if (!this.isLoggedIn && this.userInfo != auth) return;
+                var self = this;
 
                 // Check if already in list
                 for (var user in self.users) {
@@ -344,8 +391,8 @@
                 }, this.blocklist.file.replace(".json", ""));
             },
             removeUser: function(user) {
-                var self = this;
                 if (!this.isLoggedIn && this.userInfo != auth) return;
+                var self = this;
 
                 window.page.editData((data) => {
                     if (self.blocklist.type == "users" || self.blocklist.type == "both") {
@@ -370,8 +417,8 @@
                 }, this.blocklist.file.replace(".json", ""));
             },
             addZite: function() {
-                var self = this;
                 if (!this.isLoggedIn && this.userInfo != auth) return;
+                var self = this;
 
                 // Check if already in list
                 for (var zite in self.zites) {
@@ -455,6 +502,76 @@
 						Router.navigate("");
 					});
 				});
+            },
+            addUserToBlocklist: function(user) {
+                if (!this.isLoggedIn) return;
+                var self = this;
+
+                // Add user to one of your own blocklists
+                console.log(this.add_user_to_blocklist_select);
+
+                window.page.editData((data) => {
+                    if (self.blocklist.type == "users" || self.blocklist.type == "both") {
+                        if (!data["mutes"]) data["mutes"] = {};
+                        else {
+                            // Check if already in list
+                            if (data["mutes"][user.auth_address]) {
+                                window.page.cmdp("wrapperNotification", ["error", "Already in blocklist."]);
+                                return data;
+                            }
+                        }
+
+                        data["mutes"][user.auth_address] = {
+                            date_added: Date.now(),
+                            cert_user_id: user.cert_user_id,
+                            reason: user.reason,
+                        };
+                    } else { // TODO
+                        window.page.cmdp("wrapperNotification", ["error", "Blocklist type doesn't allow adding users."]);
+                    }
+
+                    return data;
+                }, () => {
+                    self.usersAddMenu = false;
+                    self.add_user_to_blocklist_select = null;
+                    //Router.navigate("blocklist/" + auth + "/" + id);
+                }, this.add_user_to_blocklist_select.file.replace(".json", ""));
+
+            },
+            addZiteToBlocklist: function(zite) {
+                if (!this.isLoggedIn) return;
+                var self = this;
+
+                // Add user to one of your own blocklists
+                console.log(this.add_zite_to_blocklist_select);
+
+                window.page.editData((data) => {
+                    if (self.blocklist.type == "zites" || self.blocklist.type == "both") {
+                        if (!data["siteblocks"]) data["siteblocks"] = {};
+                        else {
+                            // Check if already in list
+                            if (data["siteblocks"][zite.address]) {
+                                window.page.cmdp("wrapperNotification", ["error", "Already in blocklist."]);
+                                return data;
+                            }
+                        }
+
+                        data["siteblocks"][zite.address] = {
+                            date_added: Date.now(),
+                            name: zite.name,
+                            reason: zite.reason,
+                        };
+                    } else { // TODO
+                        window.page.cmdp("wrapperNotification", ["error", "Blocklist type doesn't allow adding zites."]);
+                    }
+
+                    return data;
+                }, () => {
+                    self.zitesAddMenu = false;
+                    self.add_zite_to_blocklist_select = null;
+                    //Router.navigate("blocklist/" + auth + "/" + id);
+                }, this.add_zite_to_blocklist_select.file.replace(".json", ""));
+
             },
             showMenu: function(e, obj) {
                 e.preventDefault()
