@@ -107,6 +107,7 @@
                     <v-divider></v-divider>
                     <v-card-actions>
                         <v-spacer></v-spacer>
+                        <v-btn small flat @click="removeZite(zite)">Remove</v-btn>
                         <v-btn small flat @click="zite.menu = false">Cancel</v-btn>
                         <!--<v-btn small flat color="primary" @click="addZite()">Mute</v-btn>-->
                     </v-card-actions>
@@ -128,6 +129,7 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn small flat @click="user.menu = false">Cancel</v-btn>
+                        <v-btn small flat @click="removeUser(user)">Remove</v-btn>
                         <v-btn small flat color="red" @click="muteUser(user)">Mute</v-btn>
                     </v-card-actions>
                 </v-card>
@@ -206,6 +208,10 @@
                     .then((mutes) => {
                         var users = [];
 
+                        if (!mutes[0]) {
+                            self.users = users;
+                            return;
+                        }
                         for (var user_key in mutes[0].value) {
                             users.push({
                                 cert_user_id: mutes[0].value[user_key].cert_user_id,
@@ -232,6 +238,10 @@
                     .then((siteblocks) => {
                         var zites = [];
 
+                        if (!siteblocks[0]) {
+                            self.zites = zites;
+                            return;
+                        }
                         for (var zite_key in siteblocks[0].value) {
                             zites.push({
                                 address: zite_key,
@@ -333,6 +343,32 @@
                     //Router.navigate("blocklist/" + auth + "/" + id);
                 }, this.blocklist.file.replace(".json", ""));
             },
+            removeUser: function(user) {
+                var self = this;
+                if (!this.isLoggedIn && this.userInfo != auth) return;
+
+                window.page.editData((data) => {
+                    if (self.blocklist.type == "users" || self.blocklist.type == "both") {
+                        if (!data["mutes"]) {
+                            window.page.cmdp("wrapperNotification", ["error", "Blocklist's users is empty."]);
+                            data["mutes"] = {};
+                            return data;
+                        }
+
+                        var entries = Object.entries(data["mutes"]);
+                        for (var entry of entries) {
+                            var key = entry[0];
+                            var value = entry[1];
+
+                            if (key == user.auth_address) {
+                                delete data["mutes"][key];
+                                return data;
+                            }
+                        }
+                    }
+                }, () => {
+                }, this.blocklist.file.replace(".json", ""));
+            },
             addZite: function() {
                 var self = this;
                 if (!this.isLoggedIn && this.userInfo != auth) return;
@@ -367,6 +403,34 @@
                     self.zite_address = "";
                     self.zite_reason = "";
                     //Router.navigate("blocklist/" + auth + "/" + id);
+                }, this.blocklist.file.replace(".json", ""));
+            },
+            removeZite: function(zite) {
+                var self = this;
+                if (!this.isLoggedIn && this.userInfo != auth) return;
+
+                console.log("test");
+
+                window.page.editData((data) => {
+                    if (self.blocklist.type == "zites" || self.blocklist.type == "both") {
+                        if (!data["siteblocks"]) {
+                            window.page.cmdp("wrapperNotification", ["error", "Blocklist's zites is empty."]);
+                            data["siteblocks"] = {};
+                            return data;
+                        }
+
+                        var entries = Object.entries(data["siteblocks"]);
+                        for (var entry of entries) {
+                            var key = entry[0];
+                            var value = entry[1];
+
+                            if (key == zite.address) {
+                                delete data["siteblocks"][key];
+                                return data;
+                            }
+                        }
+                    }
+                }, () => {
                 }, this.blocklist.file.replace(".json", ""));
             },
             deleteBlocklist: function() {

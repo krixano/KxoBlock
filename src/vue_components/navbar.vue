@@ -42,7 +42,7 @@
 	var Router = require("../libs/router.js");
 
 	module.exports = {
-		props: ["theme", "gettingsUserInfo", "userInfo", "gettingSettings", "userSettings", "langTranslation"],
+		props: ["theme", "gettingUserInfo", "userInfo", "gettingSettings", "userSettings", "langTranslation"],
 		name: "navbar",
 		data: () => {
 			return {
