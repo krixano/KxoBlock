@@ -110,8 +110,8 @@
                     </div>
                     <v-divider></v-divider>
                     <v-card-actions>
+                        <v-btn small flat @click="removeZite(zite)" v-if="auth == userInfo.auth_address">Remove</v-btn>
                         <v-spacer></v-spacer>
-                        <v-btn small flat @click="removeZite(zite)">Remove</v-btn>
                         <v-btn small flat @click="zite.menu = false">Cancel</v-btn>
                         <!--<v-btn small flat color="primary" @click="addZite()">Mute</v-btn>-->
                     </v-card-actions>
@@ -135,10 +135,10 @@
                     </div>
                     <v-divider></v-divider>
                     <v-card-actions>
+                        <v-btn small flat @click="removeUser(user)" v-if="auth == userInfo.auth_address">Remove</v-btn>
+                        <v-btn small flat color="red" @click="muteUser(user)">Mute</v-btn>
                         <v-spacer></v-spacer>
                         <v-btn small flat @click="user.menu = false">Cancel</v-btn>
-                        <v-btn small flat @click="removeUser(user)">Remove</v-btn>
-                        <v-btn small flat color="red" @click="muteUser(user)">Mute</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-menu>
