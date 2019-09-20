@@ -127,3 +127,5 @@ class ZeroFrame {
         window.fetch = newFetch
     }
 }
+
+module.exports = ZeroFrame;
